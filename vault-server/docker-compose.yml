@@ -1,0 +1,19 @@
+version: "3.9"
+networks:
+  default:
+    name: learn-vault
+    driver: bridge
+volumes:
+  vaultlog:
+  vaultfile:
+services:
+  vault:
+    image: vault:1.12.0
+    ports:
+      - 8200:8200
+    restart: always
+    volumes:
+      - vaultlog:/vault/logs
+      - vaultfile:/vault/file
+      - ./vault.json:/vault/config/vault.json
+    entrypoint: vault server -config=/vault/config/vault.json

@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  trigger.ok: |
+    - send: [slack_webhook,discord_webhook]
+      when: true
+      description: send everything
+
+  service.webhook.discord_webhook: |
+    url: https://discord.com/api/webhooks/XXXXXXX
+    headers:
+    - name: Content-Type
+      value: application/json
+
+  template.discord_webhook: |
+    webhook:
+      discord_webhook:
+        method: POST
+        body: |
+          {
+            "username": "ArgoCD",
+            "avatar_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEyw8HDIk8fUX1oVPfeOMCQ7lASxtbKYjgxg9WzMXIRQ&s",
+            "content": "",
+            "embeds": [
+              {
+                "title": "**{{.app.metadata.name}}**",
+                "url": "$ARGOCD_HOST",
+                "color": 15258703,
+                "fields": [
+                  {
+                    "name": "Sync Status",
+                    "value": "{{.app.status.sync.status}}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Repository URL",
+                    "value": "{{.app.spec.source.repoURL}}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Author",
+                    "value": "{{(call .repo.GetCommitMetadata .app.status.sync.revision).Author}}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Change",
+                    "value": "{{(call .repo.GetCommitMetadata .app.status.sync.revision).Message}}",
+                    "inline": true
+                  }
+                  {{range $index, $c := .app.status.conditions}}
+                  {{if not $index}},{{end}}
+                  {{if $index}},{{end}}
+                  {
+                    "name": "{{$c.type}}",
+                    "value": "{{$c.message}}",
+                    "inline": true
+                  }
+                  {{end}}
+                ]
+              }
+            ]
+          }
+
+  service.webhook.slack_webhook: |
+    url: https://hooks.slack.com/services/XXXXXXXXXXXXXXXXXXXXXXXX
+    headers:
+    - name: Content-Type
+      value: application/json
+  template.slack_webhook: |
+    webhook:
+      slack_webhook:
+        method: POST
+        body: |
+          {
+            "attachments": [{
+              "title": "{{.app.metadata.name}}",
+              "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+              "color": "#18be52",
+              "fields": [{
+                "title": "Sync Status",
+                "value": "{{.app.status.sync.status}}",
+                "short": true
+              }, {
+                "title": "Repository",
+                "value": "{{.app.spec.source.repoURL}}",
+                "short": true
+              }]
+            }]
+          }

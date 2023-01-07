@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: development
+  namespace: argocd
+  annotations:
+    notifications.argoproj.io/subscribe.ok.slack_webhook: general
+    notifications.argoproj.io/subscribe.ok.discord_webhook: ""
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/XXXX/XXXX.git
+    targetRevision: master
+    path: helm-chart/development
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: development
