@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: default
+  name: github-runner-infra-repo-sa
+automountServiceAccountToken: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: github-runner-infra-repo-cluster-role-binding
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: github-runner-infra-repo-sa
+    namespace: default
+    apiGroup: ""
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: github-runner-infra-repo
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    spec:
+      serviceAccountName: github-runner-infra-repo-sa
+      automountServiceAccountToken: true
+      image: summerwind/actions-runner-dind
+      dockerdWithinRunnerContainer: true
+      labels:
+        - admin-cluster-role
+      repository: dongnguyenltqb/gitops-k8s
+      workVolumeClaimTemplate:
+        storageClassName: "standard"
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+      env: []
