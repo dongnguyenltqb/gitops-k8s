@@ -1,2 +1,2 @@
-vpc_cidr: "10.0.0.0/16"
-cert_arn: ""
+vpc_cidr: "10.80.0.0/16"
+cert_arn: "arn:aws:acm:ap-southeast-1:244595689229:certificate/9b15ef0a-a273-4127-bb3d-6dd0f57f9511"
