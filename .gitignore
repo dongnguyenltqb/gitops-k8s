@@ -1,5 +1,4 @@
 linkerd/*.crt
 linkerd/*.key
 .env
-.Values
-**/.Values
+**/.values.yaml
