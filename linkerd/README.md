@@ -24,7 +24,7 @@
     $ step certificate create identity.linkerd.cluster.local issuer.crt issuer.key --profile intermediate-ca --not-after 87600h --no-password --insecure --ca ca.crt --ca-key ca.key
     ```
 
-4.  Install Control Plan
+4.  Install Control Plane
 
     ```
     helm install linkerd-control-plane -n linkerd \
@@ -47,6 +47,8 @@
 6.  Install Flagger
 
     ```
+    helm repo add flagger https://flagger.app
+    helm repo update
     helm upgrade -i flagger flagger/flagger \
     --namespace=linkerd \
     --set crd.create=false \
