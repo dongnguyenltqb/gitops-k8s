@@ -1,0 +1,13 @@
+api:
+  image:
+    repository: nginx
+    pullPolicy: Always
+    tag: "latest"
+backoffice:
+  image:
+    repository: nginx
+    pullPolicy: Always
+    tag: "1.20.0"
+rds:
+  auth:
+    database: argocd

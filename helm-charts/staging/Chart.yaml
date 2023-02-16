@@ -1,0 +1,29 @@
+apiVersion: v2
+name: staging
+description: Chart for staging
+type: application
+version: 0.0.6
+appVersion: "1.0.0"
+dependencies:
+  - name: postgresql
+    repository: https://charts.bitnami.com/bitnami
+    alias: rds
+    version: 12.1.15
+  - name: base
+    version: 0.1.1
+    alias: web
+  - name: base
+    version: 0.1.1
+    alias: backoffice
+  - name: base
+    version: 0.1.1
+    alias: api
+  - name: base
+    version: 0.1.1
+    alias: order
+  - name: base
+    version: 0.1.1
+    alias: noti
+  - name: base
+    version: 0.1.1
+    alias: payment
