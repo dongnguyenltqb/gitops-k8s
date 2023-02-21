@@ -1,19 +1,38 @@
 version: "3.9"
+
 networks:
   default:
-    name: learn-vault
+    name: vault-server
     driver: bridge
+
 volumes:
   vaultlog:
-  vaultfile:
+  pgdata:
+
+
 services:
   vault:
     image: vault:1.12.0
+    environment:
+      VAULT_PG_CONNECTION_URL: postgres://postgres:helloworld@db:5432/vault?sslmode=disable
     ports:
       - 8200:8200
     restart: always
     volumes:
       - vaultlog:/vault/logs
-      - vaultfile:/vault/file
       - ./vault.json:/vault/config/vault.json
     entrypoint: vault server -config=/vault/config/vault.json
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15.2-alpine3.17
+    environment:
+      POSTGRES_PASSWORD: helloworld
+      POSTGRES_USER: postgres
+      POSTGRES_DB: vault
+      PGDATA: /var/lib/postgresql/data
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./create-vault-table.sh:/docker-entrypoint-initdb.d/create-vault-table.sh
