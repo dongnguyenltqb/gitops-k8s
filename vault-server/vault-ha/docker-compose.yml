@@ -1,0 +1,63 @@
+version: "3.9"
+
+networks:
+  default:
+    name: vault-server
+    driver: bridge
+
+volumes:
+  pgdata:
+
+
+services:
+  haproxy:
+    image: haproxy:2.6.1-alpine
+    ports:
+      - 3000:3000
+    volumes:
+      - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+
+  copper:
+    image: vault:1.12.0
+    environment:
+      VAULT_PG_CONNECTION_URL: postgres://postgres:helloworld@db:5432/vault?sslmode=disable
+    ports:
+      - 4000:8200
+    restart: always
+    volumes:
+      - ./config/copper.json:/vault/config/vault.json
+    entrypoint: vault server -config=/vault/config/vault.json
+
+  alice:
+    image: vault:1.12.0
+    environment:
+      VAULT_PG_CONNECTION_URL: postgres://postgres:helloworld@db:5432/vault?sslmode=disable
+    restart: always
+    ports:
+      - 5000:8200
+    volumes:
+      - ./config/alice.json:/vault/config/vault.json
+    entrypoint: vault server -config=/vault/config/vault.json
+
+  bob:
+    image: vault:1.12.0
+    environment:
+      VAULT_PG_CONNECTION_URL: postgres://postgres:helloworld@db:5432/vault?sslmode=disable
+    restart: always
+    ports:
+      - 6000:8200
+    volumes:
+      - ./config/bob.json:/vault/config/vault.json
+    entrypoint: vault server -config=/vault/config/vault.json
+
+  db:
+    image: postgres:15.2-alpine3.17
+    environment:
+      POSTGRES_PASSWORD: helloworld
+      POSTGRES_USER: postgres
+      POSTGRES_DB: vault
+      PGDATA: /var/lib/postgresql/data
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./create-vault-table.sh:/docker-entrypoint-initdb.d/create-vault-table.sh
