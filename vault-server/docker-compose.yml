@@ -9,7 +9,6 @@ volumes:
   vaultlog:
   pgdata:
 
-
 services:
   vault:
     image: vault:1.12.0
