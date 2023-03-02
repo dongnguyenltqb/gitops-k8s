@@ -40,7 +40,7 @@
     ```
     $ helm repo add grafana https://grafana.github.io/helm-charts
     $ helm upgrade -i grafana -n grafana --create-namespace grafana/grafana \
-     -f https://devops-terraform-assets.s3.ap-southeast-1.amazonaws.com/linkerd-viz-grafana-chart/values.yaml
+     -f grafana-values.yaml
     $ helm upgrade -i linkerd-viz --set grafana.url=grafana.grafana:80 --set prometheus.enable=true linkerd/linkerd-viz -n linkerd
     ```
 
@@ -53,5 +53,5 @@
     --namespace=linkerd \
     --set crd.create=false \
     --set meshProvider=linkerd \
-    --set metricsServer=http://linkerd-prometheus:9090 --atomic
+    --set metricsServer=http://prometheus.linkerd:9090 --atomic
     ```
